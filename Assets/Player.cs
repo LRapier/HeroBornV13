@@ -4,6 +4,8 @@ using UnityEngine;
 
 public class Player : MonoBehaviour
 {
+    [SerializeField] AudioClip[] _clips;
+    private int clipIndex;
     public float moveSpeed = 10f;
     public float rotateSpeed = 150f;
     public float jumpVelocity = 5f;
@@ -57,6 +59,9 @@ public class Player : MonoBehaviour
         {
             _rb.AddForce(Vector3.up * jumpVelocity, ForceMode.Impulse);
             playerJump();
+            clipIndex = 0;
+            AudioClip clip = _clips[clipIndex];
+            GetComponent<AudioSource>().PlayOneShot(clip);
             doJump = false;
         }
         if(doShoot)
@@ -65,6 +70,9 @@ public class Player : MonoBehaviour
             Rigidbody bulletRB = newBullet.GetComponent<Rigidbody>(); 
             bulletRB.velocity = this.transform.forward * bulletSpeed;
             _gameManager.ammo -= 1;
+            clipIndex = 1;
+            AudioClip clip = _clips[clipIndex];
+            GetComponent<AudioSource>().PlayOneShot(clip);
             doShoot = false;
         }
     }
@@ -76,12 +84,11 @@ public class Player : MonoBehaviour
     }
     void OnCollisionEnter(Collision collision)
     {
-        if (collision.gameObject.name == "EnemyBasic")
+        if (collision.gameObject.name == "EnemyBasic" || collision.gameObject.name == "EnemySpeed")
         {
-            _gameManager.HP -= 1;
-        }
-        if (collision.gameObject.name == "EnemySpeed")
-        {
+            clipIndex = 2;
+            AudioClip clip = _clips[clipIndex];
+            GetComponent<AudioSource>().PlayOneShot(clip);
             _gameManager.HP -= 1;
         }
     }
@@ -90,12 +97,18 @@ public class Player : MonoBehaviour
         speedMultiplier = multiplier;
         moveSpeed *= multiplier;
         _gameManager.boosted = "Yes";
+        clipIndex = 3;
+        AudioClip clip = _clips[clipIndex];
+        GetComponent<AudioSource>().PlayOneShot(clip);
         Invoke("EndSpeedBoost", seconds);
     }
     private void EndSpeedBoost()
     {
         moveSpeed /= speedMultiplier;
         _gameManager.boosted = "No";
+        clipIndex = 4;
+        AudioClip clip = _clips[clipIndex];
+        GetComponent<AudioSource>().PlayOneShot(clip);
         Debug.Log("Speed boost end");
     }
     public void Disguise(float seconds)
@@ -103,6 +116,9 @@ public class Player : MonoBehaviour
         GetComponent<Renderer>().material.SetColor("_Color", Color.red);
         _gameManager.disguised = "Yes";
         name = "DisguisedPlayer";
+        clipIndex = 5;
+        AudioClip clip = _clips[clipIndex];
+        GetComponent<AudioSource>().PlayOneShot(clip);
         Invoke("EndDisguise", seconds);
     }
     private void EndDisguise()
@@ -110,6 +126,9 @@ public class Player : MonoBehaviour
         GetComponent<Renderer>().material.SetColor("_Color", Color.green);
         name = "Player";
         _gameManager.disguised = "No";
+        clipIndex = 6;
+        AudioClip clip = _clips[clipIndex];
+        GetComponent<AudioSource>().PlayOneShot(clip);
         Debug.Log("Disguise end");
     }
 }

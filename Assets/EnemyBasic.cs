@@ -5,6 +5,8 @@ using UnityEngine.AI;
 
 public class EnemyBasic : MonoBehaviour
 {
+    [SerializeField] AudioClip[] _clips;
+    private int clipIndex;
     public Transform player;
     public Transform patrolRoute;
     public List<Transform> locations;
@@ -21,6 +23,9 @@ public class EnemyBasic : MonoBehaviour
             _lives = value;
             if (_lives <= 0)
             {
+                clipIndex = 1;
+                AudioClip clip = _clips[clipIndex];
+                GetComponent<AudioSource>().PlayOneShot(clip);
                 Destroy(this.gameObject);
                 Debug.Log("Enemy down.");
             }
@@ -56,6 +61,9 @@ public class EnemyBasic : MonoBehaviour
         if (collision.gameObject.name == "Bullet(Clone)")
         {
             EnemyLives -= 1;
+            clipIndex = 0;
+            AudioClip clip = _clips[clipIndex];
+            GetComponent<AudioSource>().PlayOneShot(clip);
             Debug.Log("Hit!");
         }
     }

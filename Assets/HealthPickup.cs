@@ -4,6 +4,8 @@ using UnityEngine;
 
 public class HealthPickup : MonoBehaviour
 {
+    [SerializeField] AudioClip[] _clips;
+    private int clipIndex;
     public GameBehavior gameManager;
     public int heal = 2;
     void Start()
@@ -16,6 +18,9 @@ public class HealthPickup : MonoBehaviour
         {
             Destroy(this.transform.parent.gameObject);
             Debug.Log("Health Pickup collected!");
+            clipIndex = 0;
+            AudioClip clip = _clips[clipIndex];
+            GetComponent<AudioSource>().PlayOneShot(clip);
             gameManager.HP += heal;
         }
     }

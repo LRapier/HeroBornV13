@@ -6,6 +6,8 @@ using CustomExtensions;
 
 public class GameBehavior : MonoBehaviour, IManager
 {
+    [SerializeField] AudioClip[] _clips;
+    private int clipIndex;
     public bool showWinScreen = false;
     public bool showLossScreen = false;
     public string labelText = "Collect all 4 trophies!";
@@ -55,6 +57,9 @@ public class GameBehavior : MonoBehaviour, IManager
             if (_playerHP <= 0)
             {
                 labelText = "You want another life with that?";
+                clipIndex = 0;
+                AudioClip clip = _clips[clipIndex];
+                GetComponent<AudioSource>().PlayOneShot(clip);
                 showLossScreen = true;
                 Time.timeScale = 0;
             }
@@ -95,11 +100,6 @@ public class GameBehavior : MonoBehaviour, IManager
         Player playerBehavior = player.GetComponent<Player>();
         playerBehavior.playerJump += HandlePlayerJump;
         Debug.Log(_state);
-        lootStack.Push("Dragonbone Rapier");
-        lootStack.Push("Helm of Wisdom");
-        lootStack.Push("Golden Rapier");
-        lootStack.Push("Wand of Wind");
-        lootStack.Push("Orachalcum Gauntlets");
     }
 
     public void HandlePlayerJump()
@@ -127,38 +127,19 @@ public class GameBehavior : MonoBehaviour, IManager
         GUI.Label(new Rect(Screen.width / 2 - 100, Screen.height - 50, 300, 50), labelText);
         if (showWinScreen)
         {
-            if (GUI.Button(new Rect(Screen.width / 2 - 100, Screen.height / 2 - 50, 200, 100), "YOU WON!"))
-            {
-                Utilities.RestartLevel(0);
-            }
+           WinLevel();
         }
         if (showLossScreen)
         {
-            if (GUI.Button(new Rect(Screen.width / 2 - 100,
-            Screen.height / 2 - 50, 200, 100), "You lose..."))
-            {
-                try
-                {
-                    Utilities.RestartLevel(-1);
-                    debug("Level restarted successfully...");
-                }
-                catch (System.ArgumentException e)
-                {
-                    Utilities.RestartLevel(0);
-                    debug("Reverting to scene 0: " + e.ToString());
-                }
-                finally
-                {
-                    debug("Restart handled...");
-                }
-            }
+            LoseLevel();
         }
     }
-    public void PrintLootReport()
+    void WinLevel()
     {
-        var currentItem = lootStack.Pop();
-        var nextItem = lootStack.Peek();
-        Debug.LogFormat("You got a {0}! You've got a good chance of finding a {1} next!", currentItem, nextItem);
-        Debug.LogFormat("There are {0} random loot items waiting for you!", lootStack.Count);
+        SceneManager.LoadScene("GameWin");
+    }
+    void LoseLevel()
+    {
+        SceneManager.LoadScene("GameLose");
     }
 }

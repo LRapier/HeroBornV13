@@ -4,6 +4,8 @@ using UnityEngine;
 
 public class AmmoPickup : MonoBehaviour
 {
+    [SerializeField] AudioClip[] _clips;
+    private int clipIndex;
     public GameBehavior gameManager;
     public int ammoRefill = 20;
     void Start()
@@ -16,6 +18,9 @@ public class AmmoPickup : MonoBehaviour
         {
             Destroy(this.transform.parent.gameObject);
             Debug.Log("Ammo Pickup collected!");
+            clipIndex = 0;
+            AudioClip clip = _clips[clipIndex];
+            GetComponent<AudioSource>().PlayOneShot(clip);
             gameManager.ammo += ammoRefill;
         }
     }
